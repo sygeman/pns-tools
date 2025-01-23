@@ -61,7 +61,7 @@ export default function MapView() {
     if (type === "base") {
       return (
         <div
-          className="absolute bottom-0 -rotate-45  rounded  flex justify-center items-center"
+          className="absolute bottom-0 -rotate-45  rounded-sm  flex justify-center items-center"
           style={{
             height: `${size * 2 - gap}px`,
             width: `${size * 2 - gap}px`,
@@ -77,7 +77,7 @@ export default function MapView() {
     if (type === "fortress") {
       return (
         <div
-          className="absolute bottom-0 -rotate-45  rounded  flex justify-center items-center"
+          className="absolute bottom-0 -rotate-45  rounded-sm  flex justify-center items-center"
           style={{
             height: `${size * 2 - gap}px`,
             width: `${size * 2 - gap}px`,
@@ -93,7 +93,7 @@ export default function MapView() {
     if (type === "trap") {
       return (
         <div
-          className="absolute bottom-0 -rotate-45  rounded  flex justify-center items-center"
+          className="absolute bottom-0 -rotate-45  rounded-sm  flex justify-center items-center"
           style={{
             height: `${size * 2 - gap}px`,
             width: `${size * 2 - gap}px`,
@@ -109,7 +109,7 @@ export default function MapView() {
     if (type === "resource") {
       return (
         <div
-          className="absolute bottom-0 -rotate-45  rounded  flex justify-center items-center"
+          className="absolute bottom-0 -rotate-45  rounded-sm  flex justify-center items-center"
           style={{
             height: `${size * 2 - gap}px`,
             width: `${size * 2 - gap}px`,
@@ -125,7 +125,7 @@ export default function MapView() {
     if (type === "storage") {
       return (
         <div
-          className="absolute bottom-0 -rotate-45  rounded  flex justify-center items-center"
+          className="absolute bottom-0 -rotate-45  rounded-sm  flex justify-center items-center"
           style={{
             height: `${size * 2 - gap}px`,
             width: `${size * 2 - gap}px`,
@@ -141,7 +141,7 @@ export default function MapView() {
     if (type === "hospital") {
       return (
         <div
-          className="absolute bottom-0 -rotate-45  rounded  flex justify-center items-center"
+          className="absolute bottom-0 -rotate-45  rounded-sm  flex justify-center items-center"
           style={{
             height: `${size * 2 - gap}px`,
             width: `${size * 2 - gap}px`,
@@ -157,7 +157,7 @@ export default function MapView() {
     if (type === "outpost") {
       return (
         <div
-          className="absolute bottom-0 -rotate-45  rounded  flex justify-center items-center"
+          className="absolute bottom-0 -rotate-45  rounded-sm  flex justify-center items-center"
           style={{
             height: `${size - gap}px`,
             width: `${size - gap}px`,
@@ -213,7 +213,7 @@ export default function MapView() {
                   style={{
                     background: getColor(x, y),
                   }}
-                  className="rounded"
+                  className="rounded-sm"
                 >
                   <div
                     style={{
