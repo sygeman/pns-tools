@@ -1,11 +1,7 @@
 "use client";
+import React, { useState, useRef } from "react";
 
-export default function MapView() {
-  // const matrix = [
-  //   [[0,0], [0,2]],
-  //   [[1,1], [1,3]],
-  // ];
-
+export const MapView = () => {
   const X_START = 193;
   const Y_START = 511;
 
@@ -186,52 +182,137 @@ export default function MapView() {
   const lineHeight = size * Math.sqrt(2);
   const overflow = (lineHeight - size) / 2;
 
+  const [isDragging, setIsDragging] = useState(false);
+  const [offset, setOffset] = useState({ x: 0, y: 0 }); // Текущее смещение
+  const containerRef = useRef(null);
+  const dragStartRef = useRef({ x: 0, y: 0 }); // Начальная позиция курсора
+
+  // Начало перетаскивания (для мыши и тач-экранов)
+  const onStart = (e) => {
+    setIsDragging(true);
+    const clientX = e.type.startsWith("touch")
+      ? e.touches[0].clientX
+      : e.clientX;
+    const clientY = e.type.startsWith("touch")
+      ? e.touches[0].clientY
+      : e.clientY;
+
+    dragStartRef.current = { x: clientX, y: clientY }; // Запоминаем начальное положение
+  };
+
+  // Движение мыши для перетаскивания
+  const onMove = (e) => {
+    if (!isDragging) return;
+
+    // Получаем координаты первого касания или мыши
+    const clientX = e.type.startsWith("touch")
+      ? e.touches[0].clientX
+      : e.clientX;
+    const clientY = e.type.startsWith("touch")
+      ? e.touches[0].clientY
+      : e.clientY;
+
+    // Разница между текущей позицией мыши/касания и начальной
+    const deltaX = clientX - dragStartRef.current.x;
+    const deltaY = clientY - dragStartRef.current.y;
+
+    // Обновляем сдвиг: инвертируем сдвиг
+    setOffset({
+      x: offset.x - deltaX, // инвертируем сдвиг по X
+      y: offset.y - deltaY, // инвертируем сдвиг по Y
+    });
+
+    // Обновляем начальную точку для следующего шага
+    dragStartRef.current = { x: e.clientX, y: e.clientY };
+  };
+
+  // Завершение перетаскивания
+  const onEnd = () => {
+    setIsDragging(false);
+  };
+
+  const onLeave = () => {
+    setIsDragging(false);
+  };
+
   return (
-    <div className="p-4">
-      <div className="flex flex-col shrink-0">
-        {mapMatrix.map((yLine, yIndex) => (
-          <div
-            key={yIndex}
-            style={{
-              height: `${lineHeight}px`,
-              paddingTop: `${(lineHeight - size) / 2}px`,
-              paddingLeft: `${(lineHeight - size) / 2}px`,
-              gap: `${overflow * 2}px`,
-              marginLeft: yIndex % 2 === 0 ? 0 : lineHeight / 2,
-              marginTop: yIndex % 2 === 0 ? 0 : -(lineHeight / 2),
-              marginBottom: yIndex % 2 === 0 ? 0 : -(lineHeight / 2),
-            }}
-            className="flex shrink-0"
-          >
-            {yLine.map(([x, y]) => (
-              <div
-                key={`${x}:${y}`}
-                style={{ height: `${size}px`, width: `${size}px` }}
-                className="rotate-45 flex justify-center items-center shrink-0 relative"
-              >
+    <div
+      ref={containerRef}
+      style={{
+        width: "100vw",
+        height: "100vh",
+        overflow: "hidden",
+        position: "relative",
+        userSelect: "none", // Отключаем выделение текста
+      }}
+      // Обработчики для мыши
+      onMouseMove={onMove}
+      onMouseUp={onEnd}
+      onMouseLeave={onLeave}
+      // Обработчики для тач-экранов
+      onTouchMove={onMove}
+      onTouchEnd={onEnd}
+      onTouchStart={onStart}
+    >
+      <div
+        className="size-full"
+        // Обработчик для начала перетаскивания (для мыши и тач-экранов)
+        onMouseDown={onStart}
+        onTouchStart={onStart}
+        style={{
+          width: "2000px", // Большая ширина контента
+          height: "2000px", // Большая высота контента
+          position: "absolute",
+          top: -offset.y + "px",
+          left: -offset.x + "px",
+          cursor: "grab",
+        }}
+      >
+        <div className="flex flex-col shrink-0">
+          {mapMatrix.map((yLine, yIndex) => (
+            <div
+              key={yIndex}
+              style={{
+                height: `${lineHeight}px`,
+                paddingTop: `${(lineHeight - size) / 2}px`,
+                paddingLeft: `${(lineHeight - size) / 2}px`,
+                gap: `${overflow * 2}px`,
+                marginLeft: yIndex % 2 === 0 ? 0 : lineHeight / 2,
+                marginTop: yIndex % 2 === 0 ? 0 : -(lineHeight / 2),
+                marginBottom: yIndex % 2 === 0 ? 0 : -(lineHeight / 2),
+              }}
+              className="flex shrink-0"
+            >
+              {yLine.map(([x, y]) => (
                 <div
-                  style={{
-                    background: getColor(x, y),
-                  }}
-                  className="rounded-sm"
+                  key={`${x}:${y}`}
+                  style={{ height: `${size}px`, width: `${size}px` }}
+                  className="rotate-45 flex justify-center items-center shrink-0 relative"
                 >
                   <div
                     style={{
-                      height: `${size - gap}px`,
-                      width: `${size - gap}px`,
+                      background: getColor(x, y),
                     }}
-                    className="flex flex-col shrink-0 justify-center items-center -rotate-45 text-xs "
+                    className="rounded-sm"
                   >
-                    <div className="text-gray-400">{x}</div>
-                    <div className="text-gray-400/60">{y}</div>
-                    {getBuildng(x, y)}
+                    <div
+                      style={{
+                        height: `${size - gap}px`,
+                        width: `${size - gap}px`,
+                      }}
+                      className="flex flex-col shrink-0 justify-center items-center -rotate-45 text-xs "
+                    >
+                      <div className="text-gray-400">{x}</div>
+                      <div className="text-gray-400/60">{y}</div>
+                      {getBuildng(x, y)}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ))}
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
-}
+};
