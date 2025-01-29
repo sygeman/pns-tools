@@ -200,14 +200,17 @@ export const MapView = () => {
   const onTouchStart = ({ touches }: React.TouchEvent<HTMLDivElement>) =>
     onStart(touches[0].clientX, touches[0].clientY);
 
-  // Движение мыши для перетаскивания
   const onMove = (clientX: number, clientY: number) => {
     if (!isDragging) return;
 
+    // Пересчитываем смещение
     const deltaX = clientX - dragStartRef.current.x;
     const deltaY = clientY - dragStartRef.current.y;
 
-    setOffset({ x: offset.x - deltaX, y: offset.y - deltaY });
+    setOffset((prevOffset) => ({
+      x: prevOffset.x + deltaX,
+      y: prevOffset.y + deltaY,
+    }));
 
     dragStartRef.current = { x: clientX, y: clientY };
   };
@@ -251,8 +254,8 @@ export const MapView = () => {
         style={{
           cursor: isDragging ? "grab" : "default",
           position: "absolute",
-          top: -offset.y + "px",
-          left: -offset.x + "px",
+          transform: `translate(${offset.x}px, ${offset.y}px)`,
+          transition: isDragging ? "none" : "transform 0.3s ease-out",
         }}
       >
         <div className="flex flex-col shrink-0">
@@ -277,9 +280,7 @@ export const MapView = () => {
                   className="rotate-45 flex justify-center items-center shrink-0 relative"
                 >
                   <div
-                    style={{
-                      background: getColor(x, y),
-                    }}
+                    style={{ background: getColor(x, y) }}
                     className="rounded-sm"
                   >
                     <div
