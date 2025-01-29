@@ -249,12 +249,10 @@ export const MapView = () => {
         onMouseDown={onStartMouse}
         onTouchStart={onTouchStart}
         style={{
-          width: "2000px", // Большая ширина контента
-          height: "2000px", // Большая высота контента
+          cursor: isDragging ? "grab" : "default",
           position: "absolute",
           top: -offset.y + "px",
           left: -offset.x + "px",
-          cursor: "grab",
         }}
       >
         <div className="flex flex-col shrink-0">
