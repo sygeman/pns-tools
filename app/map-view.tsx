@@ -187,53 +187,42 @@ export const MapView = () => {
   const containerRef = useRef(null);
   const dragStartRef = useRef({ x: 0, y: 0 }); // Начальная позиция курсора
 
-  // Начало перетаскивания (для мыши и тач-экранов)
-  const onStart = (e) => {
+  const onStart = (clientX: number, clientY: number) => {
     setIsDragging(true);
-    const clientX = e.type.startsWith("touch")
-      ? e.touches[0].clientX
-      : e.clientX;
-    const clientY = e.type.startsWith("touch")
-      ? e.touches[0].clientY
-      : e.clientY;
-
     dragStartRef.current = { x: clientX, y: clientY }; // Запоминаем начальное положение
   };
 
+  const onStartMouse = ({
+    clientX,
+    clientY,
+  }: React.MouseEvent<HTMLDivElement>) => onStart(clientX, clientY);
+
+  const onTouchStart = ({ touches }: React.TouchEvent<HTMLDivElement>) =>
+    onStart(touches[0].clientX, touches[0].clientY);
+
   // Движение мыши для перетаскивания
-  const onMove = (e) => {
+  const onMove = (clientX: number, clientY: number) => {
     if (!isDragging) return;
 
-    // Получаем координаты первого касания или мыши
-    const clientX = e.type.startsWith("touch")
-      ? e.touches[0].clientX
-      : e.clientX;
-    const clientY = e.type.startsWith("touch")
-      ? e.touches[0].clientY
-      : e.clientY;
-
-    // Разница между текущей позицией мыши/касания и начальной
     const deltaX = clientX - dragStartRef.current.x;
     const deltaY = clientY - dragStartRef.current.y;
 
-    // Обновляем сдвиг: инвертируем сдвиг
-    setOffset({
-      x: offset.x - deltaX, // инвертируем сдвиг по X
-      y: offset.y - deltaY, // инвертируем сдвиг по Y
-    });
+    setOffset({ x: offset.x - deltaX, y: offset.y - deltaY });
 
-    // Обновляем начальную точку для следующего шага
-    dragStartRef.current = { x: e.clientX, y: e.clientY };
+    dragStartRef.current = { x: clientX, y: clientY };
   };
+
+  const onMoveMouse = ({
+    clientX,
+    clientY,
+  }: React.MouseEvent<HTMLDivElement>) => onMove(clientX, clientY);
+
+  const onTouchMove = ({ touches }: React.TouchEvent<HTMLDivElement>) =>
+    onMove(touches[0].clientX, touches[0].clientY);
 
   // Завершение перетаскивания
-  const onEnd = () => {
-    setIsDragging(false);
-  };
-
-  const onLeave = () => {
-    setIsDragging(false);
-  };
+  const onEnd = () => setIsDragging(false);
+  const onLeave = () => setIsDragging(false);
 
   return (
     <div
@@ -243,22 +232,22 @@ export const MapView = () => {
         height: "100vh",
         overflow: "hidden",
         position: "relative",
-        userSelect: "none", // Отключаем выделение текста
+        userSelect: "none",
       }}
       // Обработчики для мыши
-      onMouseMove={onMove}
+      onMouseMove={onMoveMouse}
       onMouseUp={onEnd}
       onMouseLeave={onLeave}
       // Обработчики для тач-экранов
-      onTouchMove={onMove}
+      onTouchMove={onTouchMove}
       onTouchEnd={onEnd}
-      onTouchStart={onStart}
+      onTouchStart={onTouchStart}
     >
       <div
         className="size-full"
         // Обработчик для начала перетаскивания (для мыши и тач-экранов)
-        onMouseDown={onStart}
-        onTouchStart={onStart}
+        onMouseDown={onStartMouse}
+        onTouchStart={onTouchStart}
         style={{
           width: "2000px", // Большая ширина контента
           height: "2000px", // Большая высота контента
