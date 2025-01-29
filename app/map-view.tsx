@@ -230,13 +230,7 @@ export const MapView = () => {
   return (
     <div
       ref={containerRef}
-      style={{
-        width: "100vw",
-        height: "100vh",
-        overflow: "hidden",
-        position: "relative",
-        userSelect: "none",
-      }}
+      className="select-none relative overflow-hidden h-screen w-screen"
       // Обработчики для мыши
       onMouseMove={onMoveMouse}
       onMouseUp={onEnd}
@@ -247,13 +241,12 @@ export const MapView = () => {
       onTouchStart={onTouchStart}
     >
       <div
-        className="size-full"
+        className="size-full absolute"
         // Обработчик для начала перетаскивания (для мыши и тач-экранов)
         onMouseDown={onStartMouse}
         onTouchStart={onTouchStart}
         style={{
           cursor: isDragging ? "grab" : "default",
-          position: "absolute",
           transform: `translate(${offset.x}px, ${offset.y}px)`,
           transition: isDragging ? "none" : "transform 0.3s ease-out",
         }}
